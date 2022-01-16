@@ -2,5 +2,6 @@
 
 int main()
 {
-	std::cout << "Hello world" << std::endl;
+	int x = 10;
+	dbg(x);
 }

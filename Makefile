@@ -10,5 +10,5 @@ endif
 run: $(target)
 	./$(target)
 
-$(target): main.cpp
-	g++ -o main main.cpp -Wall -std=c++17
+$(target): main.cpp dbg.hpp
+	g++ -include dbg.hpp -o main main.cpp -Wall -std=c++17
