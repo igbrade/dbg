@@ -1,10 +1,19 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <map>
+#include <set>
+#include <utility>
+#include <queue>
+#include <stack>
 
 #ifdef __GNUC__
 #include <cxxabi.h>
 #include <stdlib.h>
+#endif
+
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
 #endif
 
 #define dbg(...) debugFunc(__FILE__, __LINE__, __func__, #__VA_ARGS__ __VA_OPT__(,) __VA_ARGS__)
@@ -29,6 +38,13 @@ static std::string getDemangledTypename()
 	return "";
 }
 
+template<typename A, typename B>
+static std::ostream &operator<<(std::ostream &str, const std::pair<A, B> &p)
+{
+	str << "(" << p.first << ", " << p.second << ")";
+	return str;
+}
+
 template<typename T>
 static std::ostream &operator<<(std::ostream &str, const std::vector<T> &v)
 {
@@ -39,6 +55,93 @@ static std::ostream &operator<<(std::ostream &str, const std::vector<T> &v)
 		if(!first)
 			str << ", ";
 		str << x;
+		first = false;
+	}
+	str << "]";
+	return str;
+}
+
+template<typename T>
+static std::ostream &operator<<(std::ostream &str, const std::set<T> &s)
+{
+	str << "{";
+	bool first = true;
+	for(const T& x : s)
+	{
+		if(!first)
+			str << ", ";
+		str << x;
+		first = false;
+	}
+	str << "}";
+	return str;
+}
+
+template<typename Key, typename Value>
+static std::ostream &operator<<(std::ostream &str, const std::map<Key, Value> &m)
+{	
+	str << "{";
+	bool first = true;
+	for(const auto& x : m)
+	{
+		if(!first)
+			str << ", ";
+		str << x;
+		first = false;
+	}
+	str << "}";
+	return str;
+}
+
+
+template<typename T>
+static std::ostream &operator<<(std::ostream &str, const std::queue<T> &q)
+{
+	str << "[";
+	std::queue<T> temp = q;
+	bool first = true;
+	while(!temp.empty())
+	{
+		if(!first)
+			str << ", ";
+		str << temp.front();
+		temp.pop();
+		first = false;
+	}
+	str << "]";
+	return str;
+}
+
+template<typename T>
+static std::ostream &operator<<(std::ostream &str, const std::stack<T> &s)
+{
+	str << "[";
+	std::stack<T> temp = s;
+	bool first = true;
+	while(!temp.empty())
+	{
+		if(!first)
+			str << ", ";
+		str << temp.top();
+		temp.pop();
+		first = false;
+	}
+	str << "]";
+	return str;
+}
+
+template<typename T>
+static std::ostream &operator<<(std::ostream &str, const std::priority_queue<T> &pq)
+{
+	str << "[";
+	std::priority_queue<T> temp = pq;
+	bool first = true;
+	while(!temp.empty())
+	{
+		if(!first)
+			str << ", ";
+		str << temp.top();
+		temp.pop();
 		first = false;
 	}
 	str << "]";
