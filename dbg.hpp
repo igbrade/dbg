@@ -1,3 +1,6 @@
+#include <stdlib.h>
+#include <signal.h>
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -9,11 +12,13 @@
 
 #ifdef __GNUC__
 #include <cxxabi.h>
-#include <stdlib.h>
 #endif
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
+#include <Windef.h>
+#include <Winbase.h>
+#include <Wincon.h>
 #endif
 
 #define dbg(...) debugFunc(__FILE__, __LINE__, __func__, #__VA_ARGS__ __VA_OPT__(,) __VA_ARGS__)
@@ -153,3 +158,39 @@ void debugFunc(const char *file, unsigned int line, const char *funcName, const 
 {
 	std::cout << "[" << file << ":" << line << " @ " << funcName << "] " << argNames << std::endl;
 }
+
+void (*defSIGINTHandler) (int);
+void (*defSIGSEGVHandler) (int);
+void (*defSIGFPEHandler) (int);
+void (*defSIGABRTHandler) (int);
+
+static void _sigHandler(int sigN)
+{
+	//Installing a signal handler to avoid color contamination to console
+	
+	if(sigN == SIGINT)
+		return defSIGINTHandler(sigN);
+	else if(sigN == SIGSEGV)
+		return defSIGSEGVHandler(sigN);
+	else if(sigN == SIGFPE)
+		return defSIGFPEHandler(sigN);
+	else if(sigN == SIGABRT)
+		return defSIGABRTHandler(sigN);
+}
+
+static void _final()
+{
+
+}
+
+struct _init
+{
+	_init()
+	{
+		atexit(_final);
+		defSIGINTHandler = signal(SIGINT, _sigHandler);
+		defSIGSEGVHandler = signal(SIGSEGV, _sigHandler);
+		defSIGFPEHandler = signal(SIGSEGV, _sigHandler);
+		defSIGABRTHandler = signal(SIGABRT, _sigHandler);
+	}
+};
