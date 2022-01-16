@@ -13,4 +13,6 @@ int main()
 	dbg(x, y);
 
 	std::cout << v << std::endl;
+
+	std::cout << getDemangledTypename<decltype(v)>() << std::endl;
 }
