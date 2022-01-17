@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <signal.h>
+#include <stdio.h>
 
 #include <iostream>
 #include <vector>
@@ -176,6 +177,7 @@ static void _sigHandler(int sigN)
 		return defSIGFPEHandler(sigN);
 	else if(sigN == SIGABRT)
 		return defSIGABRTHandler(sigN);
+	//exit(EXIT_FAILURE);
 }
 
 static void _final()
@@ -193,4 +195,4 @@ struct _init
 		defSIGFPEHandler = signal(SIGSEGV, _sigHandler);
 		defSIGABRTHandler = signal(SIGABRT, _sigHandler);
 	}
-};
+} _initInstance;
