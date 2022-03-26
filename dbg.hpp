@@ -154,11 +154,36 @@ static std::ostream &operator<<(std::ostream &str, const std::priority_queue<T> 
 	return str;
 }
 
+static volatile sig_atomic_t intOcurred;
+
 template<typename... Args>
 void debugFunc(const char *file, unsigned int line, const char *funcName, const char *argNames, Args&&... argValues)
 {
-	std::cout << "[" << file << ":" << line << " @ " << funcName << "] " << argNames << std::endl;
+#ifdef _WIN32
+	HANDLE hErr = GetStdHandle(STD_ERROR_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO csbInfo;
+	GetConsoleScreenBufferInfo(hErr, &csbInfo);
+	SetConsoleTextAttribute(hErr, FOREGROUND_RED | FOREGROUND_INTENSITY);
+#else
+	std::cerr << "\u001b[31m";
+#endif
+	intOcurred = 0;
+	void (*prevSIGINTHandler) (int) = signal(SIGINT, [](int sig)
+	{
+		intOcurred = 1;	
+	});
+	std::cerr << "[" << file << ":" << line << " @ " << funcName << "] " << argNames << std::endl;
+#ifdef _WIN32
+	SetConsoleTextAttribute(hErr, csbInfo.wAttributes);
+#else
+	std::cerr << "\u001b[0m";
+#endif
+	signal(SIGINT, prevSIGINTHandler);
+	if(intOcurred)
+		raise(SIGINT);
 }
+
+#if false
 
 void (*defSIGINTHandler) (int);
 void (*defSIGSEGVHandler) (int);
@@ -196,3 +221,4 @@ struct _init
 		defSIGABRTHandler = signal(SIGABRT, _sigHandler);
 	}
 } _initInstance;
+#endif

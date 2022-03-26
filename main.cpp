@@ -7,7 +7,7 @@
 #include <queue>
 #include <stack>
 
-int main()
+void test1()
 {
 	int x = 10, y = 20;
 	std::vector<int> v = {5, 7};
@@ -46,4 +46,18 @@ int main()
 	std::cout << pq << std::endl;
 
 	std::cout << getDemangledTypename<decltype(v)>() << std::endl;
+}
+
+void testColorContamination()
+{
+	int x = 10;
+	while(true)
+	{
+		dbg(x);
+	}
+}
+
+int main()
+{
+	testColorContamination();
 }
