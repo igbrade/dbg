@@ -29,7 +29,7 @@ void test1()
 
 	dbg();
 
-	dbg(x, y);
+	dbg(x, y, v);
 
 	std::cout << v << std::endl;
 
@@ -59,5 +59,6 @@ void testColorContamination()
 
 int main()
 {
-	testColorContamination();
+	//testColorContamination();
+	test1();
 }

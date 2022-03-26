@@ -156,6 +156,30 @@ static std::ostream &operator<<(std::ostream &str, const std::priority_queue<T> 
 
 static volatile sig_atomic_t intOcurred;
 
+std::vector<int> splitArgnames(const char *argNames)
+{
+	std::vector<int> ret;
+	ret.push_back(0);
+	
+	int parenthesis = 0, brackets = 0, sqbrackets = 0;
+	bool quot = false;
+	
+	size_t i;
+	for(i = 0; argNames[i] != '\0'; ++i)
+	{
+		if(argNames[i] == ',' && parenthesis == 0 && brackets == 0 && sqbrackets == 0 && !quot)
+		{
+			ret.push_back(i + 1);
+		}
+		parenthesis += (argNames[i] == '(' ? 1 : (argNames[i] == ')' ? -1 : 0));
+		brackets += (argNames[i] == '{' ? 1 : (argNames[i] == '}' ? -1 : 0));
+		sqbrackets += (argNames[i] == '[' ? 1 : (argNames[i] == ']' ? -1 : 0));
+		quot = (argNames[i] == '\"' ? !quot : quot);
+	}
+	ret.push_back(i + 1);
+	return ret;
+}
+
 template<typename... Args>
 void debugFunc(const char *file, unsigned int line, const char *funcName, const char *argNames, Args&&... argValues)
 {
@@ -172,7 +196,12 @@ void debugFunc(const char *file, unsigned int line, const char *funcName, const 
 	{
 		intOcurred = 1;	
 	});
-	std::cerr << "[" << file << ":" << line << " @ " << funcName << "] " << argNames << std::endl;
+	std::cerr << "[" << file << ":" << line << " @ " << funcName << "] ";
+	std::vector<int> argPos = splitArgnames(argNames);
+	for(size_t i = 0; i + 1 < argPos.size(); ++i)
+	{
+		std::cerr << std::string_view(argNames + argPos[i], (argPos[i + 1] - argPos[i] - 1)) << std::endl;
+	}
 #ifdef _WIN32
 	SetConsoleTextAttribute(hErr, csbInfo.wAttributes);
 #else
