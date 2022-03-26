@@ -188,9 +188,12 @@ template<typename First, typename... Args>
 static void logArg(const char *argNames, const std::vector<int> &splitIndices, int curIndex, First&& first, Args&&... args)
 {
 	std::string_view curArgName(argNames + splitIndices[curIndex], (splitIndices[curIndex + 1] - splitIndices[curIndex] - 1));
-	std::cerr << curArgName << " = " << first << std::endl;
+	std::cerr << curArgName << "(" << getDemangledTypename<decltype(first)>() <<  ")" << " = " << first; 
 	if(sizeof...(Args))
+	{
+		std::cerr << ", ";
 		logArg(argNames, splitIndices, curIndex + 1, std::forward<Args>(args)...);
+	}
 }
 
 template<typename... Args>
