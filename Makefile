@@ -1,14 +1,14 @@
-
 target := main
+targetPlain := $(target)
 
 ifeq ($(OS), Windows_NT)
 	target := $(target).exe
 endif
 
-.PHONY: run
+.PHONY: run 
 
 run: $(target)
 	./$(target)
 
-$(target): main.cpp dbg.hpp
-	g++ -include dbg.hpp -o main main.cpp -Wall -std=c++17
+$(target): $(targetPlain).cpp dbg.hpp
+	g++ -include dbg.hpp -o $(target) $(targetPlain).cpp -Wall -std=c++17
