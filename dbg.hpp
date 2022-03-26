@@ -180,6 +180,19 @@ std::vector<int> splitArgnames(const char *argNames)
 	return ret;
 }
 
+static void logArg(const char *argNames, const std::vector<int> &splitIndices, int curIndex)
+{
+}
+
+template<typename First, typename... Args>
+static void logArg(const char *argNames, const std::vector<int> &splitIndices, int curIndex, First&& first, Args&&... args)
+{
+	std::string_view curArgName(argNames + splitIndices[curIndex], (splitIndices[curIndex + 1] - splitIndices[curIndex] - 1));
+	std::cerr << curArgName << " = " << first << std::endl;
+	if(sizeof...(Args))
+		logArg(argNames, splitIndices, curIndex + 1, std::forward<Args>(args)...);
+}
+
 template<typename... Args>
 void debugFunc(const char *file, unsigned int line, const char *funcName, const char *argNames, Args&&... argValues)
 {
@@ -196,12 +209,18 @@ void debugFunc(const char *file, unsigned int line, const char *funcName, const 
 	{
 		intOcurred = 1;	
 	});
+
+//Actual printing of stuff goes here
 	std::cerr << "[" << file << ":" << line << " @ " << funcName << "] ";
 	std::vector<int> argPos = splitArgnames(argNames);
-	for(size_t i = 0; i + 1 < argPos.size(); ++i)
+	logArg(argNames, argPos, 0, std::forward<Args>(argValues)...);
+	std::cerr << std::endl;
+	/*for(size_t i = 0; i + 1 < argPos.size(); ++i)
 	{
 		std::cerr << std::string_view(argNames + argPos[i], (argPos[i + 1] - argPos[i] - 1)) << std::endl;
-	}
+	}*/
+//End of print
+
 #ifdef _WIN32
 	SetConsoleTextAttribute(hErr, csbInfo.wAttributes);
 #else
