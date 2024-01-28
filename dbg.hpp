@@ -17,9 +17,7 @@
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
-#include <Windef.h>
-#include <Winbase.h>
-#include <Wincon.h>
+#include <Windows.h>
 #endif
 
 #define dbg(...) debugFunc(__FILE__, __LINE__, __func__, #__VA_ARGS__ __VA_OPT__(,) __VA_ARGS__)
@@ -156,6 +154,8 @@ static std::ostream &operator<<(std::ostream &str, const std::priority_queue<T> 
 
 static volatile sig_atomic_t intOcurred;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
 std::vector<int> splitArgnames(const char *argNames)
 {
 	std::vector<int> ret;
@@ -183,6 +183,7 @@ std::vector<int> splitArgnames(const char *argNames)
 static void logArg(const char *argNames, const std::vector<int> &splitIndices, int curIndex)
 {
 }
+#pragma GCC diagnostic pop
 
 template<typename First, typename... Args>
 static void logArg(const char *argNames, const std::vector<int> &splitIndices, int curIndex, First&& first, Args&&... args)
@@ -199,6 +200,8 @@ static void logArg(const char *argNames, const std::vector<int> &splitIndices, i
 template<typename... Args>
 void debugFunc(const char *file, unsigned int line, const char *funcName, const char *argNames, Args&&... argValues)
 {
+	std::cout << std::flush;
+	std::cerr << std::flush;
 #ifdef _WIN32
 	HANDLE hErr = GetStdHandle(STD_ERROR_HANDLE);
 	CONSOLE_SCREEN_BUFFER_INFO csbInfo;
