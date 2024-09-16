@@ -42,6 +42,26 @@ static std::string getDemangledTypename()
 	return "";
 }
 
+template<size_t index, typename... Args>
+void tuple_printer(std::ostream &s, const std::tuple<Args...> &x)
+{
+	s << std::get<index>(x);
+	if constexpr(sizeof...(Args) != index + 1)
+	{
+		s << ", ";
+		tuple_printer<index + 1>(s, x);
+	}
+}
+
+template<typename... Args>
+std::ostream& operator<<(std::ostream &s, const std::tuple<Args...> &x)
+{
+	s << '(';
+	tuple_printer<0>(s, x);
+	s << ')';
+	return s;
+}
+
 template<typename A, typename B>
 static std::ostream &operator<<(std::ostream &str, const std::pair<A, B> &p)
 {
