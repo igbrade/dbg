@@ -69,6 +69,23 @@ static std::ostream &operator<<(std::ostream &str, const std::pair<A, B> &p)
 	return str;
 }
 
+// template<typename C,
+// 	typename T = decltype(std::declval<const C&>().begin()) >
+// std::ostream& operator<<(std::ostream& str, const C& t)
+// {
+// 	str << "{";
+// 	bool first = true;
+// 	for(auto x : t)
+// 	{
+// 		if(!first)
+// 			str << ", ";
+// 		str << x;
+// 		first = false;
+// 	}
+// 	str << "}";
+// 	return str;
+// }
+
 template<typename T>
 static std::ostream &operator<<(std::ostream &str, const std::vector<T> &v)
 {
